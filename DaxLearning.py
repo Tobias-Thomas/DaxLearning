@@ -41,7 +41,41 @@ def createUniformBinary(i):
         binI = '0'+binI
     return binI
 
-bugCharacteristics = createBugCharacteristics(randint(1, 3))
+def intermediateQuestion():
+    questions = {'wings': ['Does Not Matter', 'Yes', 'No'],
+                 'legs': ['Does Not Matter', 'Four', 'Six'],
+                 'antenna': ['Does Not Matter', 'Straight', 'Curly'],
+                 'dots': ['Does Not Matter', 'Small', 'Big'],
+                 'eyes': ['Does Not Matter', 'White', 'Black']}
+    guess = gui.DlgFromDict(questions, title='Guess what a Dax is', sort_keys=False)
+    if guess.OK:
+        for key in questions:
+            dataFile.write(key + ': ' + questions[key]+', ')
+        dataFile.write('\n')
+        checkIfCorrect(questions)
+
+def checkIfCorrect(dict):
+    answer = ''
+    for key in dict:
+        answer += translateWordsToChars(dict[key])
+    if answer == bugCharacteristics:
+        dataFile.close()
+        core.quit()
+
+def translateWordsToChars(word):
+    zeroWords = ['No','Four','Straight','Small','White']
+    oneWords = ['Yes','Six','Curly','Big','Black']
+    if word in zeroWords:
+        return '0'
+    elif word in oneWords:
+        return '1'
+    elif word == 'Does Not Matter':
+        return 'x'
+    else:
+        print('illegal word')
+
+amountOfAttributes = randint(1, 3)
+bugCharacteristics = createBugCharacteristics(amountOfAttributes)
 
 expInfo = {'person': '', 'dateStr': data.getDateStr()}
 
@@ -59,10 +93,18 @@ win = visual.Window(windowSize, monitor='testMonitor', units='pix')
 win.colorSpace = 'rgb255'
 win.color = [255, 255, 255]
 
-instr1 = visual.TextStim(win, pos=[0, +30], text='Press any key to continue')
-instr2 = visual.TextStim(win, pos=[0, -30], text='Explain Experiment here')
+instr1 = visual.TextStim(win, pos=[0, +10], text='In the following Experiments you will see Bugs with 5 different attributes.\n'
+                                                  'These are: wings, legs, antenna, dots, eyes.\n'
+                                                  'All of them are binary.\n'
+                                                  'Below you can see 2 examples that show all possible attributes.\n'
+                                                  'A dax has '+str(amountOfAttributes)+' attribute(s) that identify him.\n'
+                                                  'All other attributes does not matter.\n\n\n\n'
+                                                  'Press any key to continue.')
 instr1.draw()
-instr2.draw()
+exampleImage1 = visual.ImageStim(win, pos=[-5,-5],image='BugImages/00000.png',units='deg')
+exampleImage1.draw()
+exampleImage2 = visual.ImageStim(win, pos=[+5,-5],image='BugImages/11111.png',units='deg')
+exampleImage2.draw()
 win.flip()
 event.waitKeys()
 
@@ -73,6 +115,7 @@ perfectTrial = False
 while not perfectTrial:
     shuffle(allBugs)
     perfectTrial = True
+
     for index in range(0,32):
         event.clearEvents()
         bugName = allBugs[index]
@@ -121,6 +164,8 @@ while not perfectTrial:
         feedbackRect.draw()
         win.flip()
         core.wait(3)
+
+    intermediateQuestion()
 
 dataFile.close()
 core.quit()
