@@ -1,7 +1,8 @@
 import random
 from random import randint, shuffle
-from psychopy import visual, core, event, gui, data
-
+from psychopy import visual, core, event, gui, data, prefs
+prefs.general['audioLib']=['pygame']
+from psychopy import sound
 
 def createBugCharacteristics(amount):
     if amount < 1 or amount > 5:
@@ -53,12 +54,13 @@ dataFile = open(fileName + '.csv', 'w')
 dataFile.write('DaxCharacteristics: ,'+bugCharacteristics+'\n')
 dataFile.write('corrAns,bugCharacteristics,DidVPCorr,Time\n')
 
-win = visual.Window([800, 600], monitor='testMonitor', units='deg')
+windowSize = [800,600]
+win = visual.Window(windowSize, monitor='testMonitor', units='pix')
 win.colorSpace = 'rgb255'
 win.color = [255, 255, 255]
 
-instr1 = visual.TextStim(win, pos=[0, +3], text='Press any key to continue')
-instr2 = visual.TextStim(win, pos=[0, -3], text='Explain Experiment here')
+instr1 = visual.TextStim(win, pos=[0, +30], text='Press any key to continue')
+instr2 = visual.TextStim(win, pos=[0, -30], text='Explain Experiment here')
 instr1.draw()
 instr2.draw()
 win.flip()
@@ -67,8 +69,10 @@ event.waitKeys()
 
 allBugs = createListOfBugs()
 responseTimer = core.Clock()
-while True:
+perfectTrial = False
+while not perfectTrial:
     shuffle(allBugs)
+    perfectTrial = True
     for index in range(0,32):
         event.clearEvents()
         bugName = allBugs[index]
@@ -94,13 +98,29 @@ while True:
 
         dataFile.write('%i,%s,%i,%.4f\n' % (corrAns, bugName, wasCorrect, timeForThisTrial))
         feedbackText = ''
+        feedbackText2 = ''
+        if not corrAns:
+            feedbackText2 = 'NOT'
+        feedbackRect = visual.Rect(win, lineWidth=25.0, size=[1600,1200])
         if wasCorrect:
+            correct = sound.Sound('sounds/correctAnswer.ogg')
+            correct.play()
+            feedbackRect.lineColor = 'green'
             feedbackText = 'correct'
         else:
+            perfectTrial = False
+            wrong = sound.Sound('sounds/wrongAnswer.ogg')
+            wrong.play()
+            feedbackRect.lineColor = 'red'
             feedbackText = 'wrong'
-        feedback = visual.TextStim(win, pos=[0, -3], text='Your answer was ' + feedbackText)
+        feedback = visual.TextStim(win, pos=[0, -10], text='Your answer was ' + feedbackText+
+                                                           '\n This was '+feedbackText2+' a Dax')
         feedback.colorSpace = 'rgb255'
         feedback.color = [0, 0, 0]
         feedback.draw()
+        feedbackRect.draw()
         win.flip()
-        core.wait(1.5)
+        core.wait(3)
+
+dataFile.close()
+core.quit()
