@@ -110,7 +110,7 @@ exampleImage2.draw()
 win.flip()
 event.waitKeys()
 
-vs = VersionSpace()
+vs = VersionSpace(amountOfAttributes)
 solution = False
 
 allBugs = createListOfBugs()
@@ -134,7 +134,7 @@ while not perfectTrial:
         corrAns = isThisADax(bugName)
 
         solution = vs.showNewBug(bugName,corrAns)
-        if type(solution) is str:  # version space algorith found the solution
+        if type(solution) is str:  # version space algorithm found the solution
             print(solution)
 
         while wasCorrect == None:

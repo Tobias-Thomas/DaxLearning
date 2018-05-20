@@ -1,6 +1,10 @@
 class VersionSpace:
     G = ['xxxxx']
     S = ''
+    numberOfAttributes = -1
+
+    def __init__(self,numberOfAttributes):
+        self.numberOfAttributes = numberOfAttributes
 
     def showNewBug(self,bug,isDax):
         if isDax:
@@ -9,10 +13,18 @@ class VersionSpace:
             self.spezializeGeneral(bug)
         if self.S != '':
             self.correctMissmatches(self.S)
-        if len(self.G) == 1 and self.G[0] == self.S:
+        if len(self.G) == 1 and self.G[0] == self.S or self.numOfS() == self.numberOfAttributes:
             return self.S
         self.G = list(set(self.G))  # remove duplicates from G
         return False
+
+    def numOfS(self):
+        num = 0
+        gList = list(self.S)
+        for i in range(0,len(gList)):
+            if gList[i] != 'x':
+                num += 1
+        return num
 
     def generalizeSpecial(self, bug):
         if self.S == '':
