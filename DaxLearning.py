@@ -1,4 +1,5 @@
 import random
+from VersionSpace import VersionSpace
 from random import randint, shuffle
 from psychopy import visual, core, event, gui, data, prefs
 prefs.general['audioLib']=['pygame']
@@ -14,6 +15,7 @@ def createBugCharacteristics(amount):
             chars += random.choice(['0', '1'])
         else:
             chars += 'x'
+    print(chars)
     return chars
 
 
@@ -108,6 +110,8 @@ exampleImage2.draw()
 win.flip()
 event.waitKeys()
 
+vs = VersionSpace()
+solution = False
 
 allBugs = createListOfBugs()
 responseTimer = core.Clock()
@@ -128,6 +132,11 @@ while not perfectTrial:
 
         wasCorrect = None
         corrAns = isThisADax(bugName)
+
+        solution = vs.showNewBug(bugName,corrAns)
+        if type(solution) is str:  # version space algorith found the solution
+            print(solution)
+
         while wasCorrect == None:
             allKeys = event.waitKeys()
             for thisKey in allKeys:
