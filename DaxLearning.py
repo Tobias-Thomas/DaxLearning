@@ -15,7 +15,6 @@ def createBugCharacteristics(amount):
             chars += random.choice(['0', '1'])
         else:
             chars += 'x'
-    print(chars)
     return chars
 
 
@@ -99,7 +98,6 @@ instr1 = visual.TextStim(win, pos=[0, +10], text='In the following Experiments y
                                                   'These are: wings, legs, antenna, dots, eyes.\n'
                                                   'All of them are binary.\n'
                                                   'Below you can see 2 examples that show all possible attributes.\n'
-                                                  'A dax has '+str(amountOfAttributes)+' attribute(s) that identify him.\n'
                                                   'All other attributes does not matter.\n\n\n\n'
                                                   'Press any key to continue.')
 instr1.draw()
@@ -110,7 +108,7 @@ exampleImage2.draw()
 win.flip()
 event.waitKeys()
 
-vs = VersionSpace(amountOfAttributes)
+vs = VersionSpace()
 solution = False
 
 allBugs = createListOfBugs()

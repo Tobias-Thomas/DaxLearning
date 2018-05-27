@@ -42,7 +42,7 @@ allBugs = createListOfBugs()
 for _ in range(0,10000):
     attributeNumber = randint(1, 3)
     daxCharacteristics = createBugCharacteristics(attributeNumber)
-    vs = VersionSpace(attributeNumber)
+    vs = VersionSpace()
     shuffle(allBugs)
 
 
