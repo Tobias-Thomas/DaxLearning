@@ -1,6 +1,5 @@
-import random
 from VersionSpace import VersionSpace
-from random import randint, shuffle
+from random import randint, shuffle, sample, choice
 from psychopy import visual, core, event, gui, data, prefs
 prefs.general['audioLib']=['pygame']
 from psychopy import sound
@@ -9,10 +8,10 @@ def createBugCharacteristics(amount):
     if amount < 1 or amount > 5:
         return
     chars = ''
-    positions = random.sample([0, 1, 2, 3, 4], amount)
+    positions = sample([0, 1, 2, 3, 4], amount)
     for i in range(0, 5):
         if i in positions:
-            chars += random.choice(['0', '1'])
+            chars += choice(['0', '1'])
         else:
             chars += 'x'
     return chars
@@ -53,15 +52,16 @@ def intermediateQuestion():
         for key in questions:
             dataFile.write(key + ': ' + questions[key]+', ')
         dataFile.write('\n')
-        checkIfCorrect(questions)
+        return checkIfCorrect(questions)
+    return False
 
 def checkIfCorrect(dict):
     answer = ''
     for key in dict:
         answer += translateWordsToChars(dict[key])
     if answer == bugCharacteristics:
-        dataFile.close()
-        core.quit()
+        return True
+    return False
 
 def translateWordsToChars(word):
     zeroWords = ['No','Four','Straight','Small','White']
@@ -75,7 +75,7 @@ def translateWordsToChars(word):
     else:
         print('illegal word')
 
-amountOfAttributes = randint(1, 3)
+amountOfAttributes = randint(1, 5)
 bugCharacteristics = createBugCharacteristics(amountOfAttributes)
 
 expInfo = {'person': '', 'dateStr': data.getDateStr()}
@@ -89,8 +89,7 @@ dataFile = open(fileName + '.csv', 'w')
 dataFile.write('DaxCharacteristics: ,'+bugCharacteristics+'\n')
 dataFile.write('corrAns,bugCharacteristics,DidVPCorr,Time\n')
 
-windowSize = [800,600]
-win = visual.Window(windowSize, monitor='testMonitor', units='pix')
+win = visual.Window(fullscr=True, monitor='testMonitor', units='pix')
 win.colorSpace = 'rgb255'
 win.color = [255, 255, 255]
 
@@ -113,16 +112,18 @@ solution = False
 
 allBugs = createListOfBugs()
 responseTimer = core.Clock()
-perfectTrial = False
-while not perfectTrial:
+correctRun = False
+didAnswerCorrect = False
+while not(correctRun and didAnswerCorrect):
     shuffle(allBugs)
-    perfectTrial = True
+    correctRun = True
+    numCorrect = 0
 
     for index in range(0,32):
         event.clearEvents()
         bugName = allBugs[index]
         imagePath = 'BugImages/' + bugName + '.png'
-        bug = visual.ImageStim(win, pos=[0, 0], image=imagePath, size=None, units='pix')
+        bug = visual.ImageStim(win, pos=[0, 0], image=imagePath, size=[288,212], units='pix')
         bug.draw()
         win.flip()
         responseTimer.reset()
@@ -150,15 +151,16 @@ while not perfectTrial:
         feedbackText = ''
         feedbackText2 = ''
         if not corrAns:
-            feedbackText2 = 'NOT'
+            feedbackText2 = 'NOT '
         feedbackRect = visual.Rect(win, lineWidth=25.0, size=[1600,1200])
         if wasCorrect:
+            numCorrect += 1
             correct = sound.Sound('sounds/correctAnswer.ogg')
             correct.play()
             feedbackRect.lineColor = 'green'
             feedbackText = 'correct'
         else:
-            perfectTrial = False
+            correctRun = False
             wrong = sound.Sound('sounds/wrongAnswer.ogg')
             wrong.play()
             feedbackRect.lineColor = 'red'
@@ -172,7 +174,20 @@ while not perfectTrial:
         win.flip()
         core.wait(3)
 
-    intermediateQuestion()
+    fb = visual.TextStim(win, pos=[0,0], text=str(numCorrect)+' of your last 32 answers were correct.\n\n'
+                                                         'Press any key to continue.')
+    fb.colorSpace = 'rgb255'
+    fb.color = [0,0,0]
+    fb.draw()
+    win.flip()
+    event.waitKeys()
+
+    win.winHandle.set_fullscreen(False)
+    win.winHandle.set_visible(False)
+    didAnswerCorrect = intermediateQuestion()
+    win.winHandle.set_fullscreen(True)
+    win.winHandle.set_visible(True)
+    win.flip()
 
 dataFile.close()
 core.quit()
