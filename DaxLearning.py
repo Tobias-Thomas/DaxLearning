@@ -95,7 +95,7 @@ dataFile.write('corrAns,bugCharacteristics,DidVPCorr,Time\n')
 win = visual.Window(fullscr=True, monitor='testMonitor', units='pix')
 win.colorSpace = 'rgb255'
 win.color = [255, 255, 255]
-win.mouseVisible = True
+win.mouseVisible = False
 
 instr1 = visual.TextStim(win, pos=[0, +15], text='In diesem Experiment werden Sie Käfer mit 5 verschiedenen Eigenschaften sehen\n'
                                                 'Die verschiedenen eigenschaften sind: Flügel, Punkte, Beine, Antennen und Augen\n'
@@ -209,9 +209,11 @@ for amountOfAttributes in procedure:
 
         win.winHandle.set_fullscreen(False)
         win.winHandle.set_visible(False)
+        win.mouseVisible = True
         didAnswerCorrect = intermediateQuestion()
         win.winHandle.set_fullscreen(True)
         win.winHandle.set_visible(True)
+        win.mouseVisible = False
         win.flip()
 
     intermediateFeedback = visual.TextStim(win, pos=[0,0], text='Super! Du hast dieses Rätsel gelöst.\n'
