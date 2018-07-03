@@ -95,7 +95,7 @@ dataFile.write('corrAns,bugCharacteristics,DidVPCorr,Time\n')
 win = visual.Window(fullscr=True, monitor='testMonitor', units='pix')
 win.colorSpace = 'rgb255'
 win.color = [255, 255, 255]
-win.mouseVisible = False
+win.mouseVisible = True
 
 instr1 = visual.TextStim(win, pos=[0, +15], text='In diesem Experiment werden Sie Käfer mit 5 verschiedenen Eigenschaften sehen\n'
                                                 'Die verschiedenen eigenschaften sind: Flügel, Punkte, Beine, Antennen und Augen\n'
