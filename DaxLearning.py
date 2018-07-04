@@ -156,7 +156,6 @@ for amountOfAttributes in procedure:
                         wasCorrect = (thisKey == 'y' and corrAns) or (thisKey == 'n' and (not corrAns))
                 event.clearEvents()
 
-            dataFile.write('%i,%s,%i,' % (corrAns, bugName, wasCorrect))
             feedbackText = ''
             feedbackText2 = ''
             if not corrAns:
@@ -195,7 +194,7 @@ for amountOfAttributes in procedure:
                 else:
                     continue
             timeForThisTrial = responseTimer.getTime()
-            dataFile.write('%.4f\n'%(timeForThisTrial))
+            dataFile.write('%i,%s,%i,%.4f\n' % (corrAns, bugName, wasCorrect, timeForThisTrial))
 
 
 
