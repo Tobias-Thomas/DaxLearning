@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from tkinter.filedialog import askopenfilename
 import csv
-
+import codecs
 
 def isFloat(s):
     try:
@@ -16,11 +16,14 @@ personID = ''
 if isinstance(filename, str):
     personID = filename.split('/')
     personID = personID[len(personID)-1]
+    n = 0
     for i, c in enumerate(personID):
         if c.isdigit():
-            break
+            n += 1
+            if n == 3:
+                break
     personID = personID[:i]
-with open(filename, 'r') as csvfile:
+with codecs.open(filename, 'r',encoding='utf-8',errors='ignore') as csvfile:
     reader = csv.reader(csvfile)
     procedure = []
     successes = []
@@ -36,7 +39,7 @@ with open(filename, 'r') as csvfile:
                 procedure = procedureParts.split(';')
         if len(row) == 2:
             successes.append(successesForOneTrial)
-            successes = []
+            successesForOneTrial = []
             times.append(timesForOneTrial)
             timesForOneTrial = []
         elif len(row) == 4:
@@ -47,14 +50,14 @@ with open(filename, 'r') as csvfile:
     times.append(timesForOneTrial)
     times = times[1:]
     successes.append(successesForOneTrial)
-    successes = successes[:1]
+    successes = successes[1:]
 
     for j in range(len(times)):
         timeTrial = times[j]
         plt.plot(range(1, len(timeTrial)+1), timeTrial)
         plt.xlabel('# of shown bug')
         plt.ylabel('time')
-        timePlotName = personID+procedure[j].strip()+'time'
+        timePlotName = personID + str(j+1) + '-' + procedure[j].strip() +'time'
         plt.savefig('plots/'+timePlotName+'.pdf', format='pdf')
 
         plt.gcf().clear()
@@ -63,7 +66,8 @@ with open(filename, 'r') as csvfile:
         plt.plot(range(1, len(successTrial) + 1), successTrial)
         plt.xlabel('# of shown bug')
         plt.ylabel('success')
-        successPlotName = personID + procedure[j].strip() + 'success'
+        successPlotName = personID + str(j+1) + '-' + procedure[j].strip() + 'success'
         plt.savefig('plots/' + successPlotName + '.pdf', format='pdf')
 
+        plt.gcf().clear()
         j += 1
